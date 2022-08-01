@@ -1,34 +1,14 @@
 use chrono::prelude::{DateTime, Utc};
 
-use super::participant::{Participant, Reputation};
+use super::bid::Bid;
+use super::money_exchange::MoneyExchange;
+use super::participant::Reputation;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Status {
     Fisnished,
     Online,
     Live,
-}
-
-#[derive(Debug, PartialEq, PartialOrd, Copy, Clone)]
-pub enum MoneyExchange {
-    USD(i32),
-    ARS(i32),
-    BTC(i32),
-}
-
-#[derive(Debug, PartialEq, PartialOrd, Copy, Clone)]
-pub struct Bid {
-    pub amount: MoneyExchange,
-    pub participant: Participant,
-}
-
-impl Bid {
-    pub fn new(a: MoneyExchange, p: Participant) -> Bid {
-        Self {
-            amount: a,
-            participant: p,
-        }
-    }
 }
 
 #[derive(Debug)]
@@ -53,11 +33,11 @@ impl Auctions {
         min_reputation: Option<Reputation>,
     ) -> Auctions {
         Self {
-            state: Status::Online,
+            state: state,
             base_price: base_price,
             start_at: start_at,
             end_at: end_at,
-            discoverable: false,
+            discoverable: discoverable,
             bid: Vec::new(),
             best_bid: None,
             min_reputation: min_reputation,
@@ -68,8 +48,8 @@ impl Auctions {
         // should be a map_or_else
         match &self.best_bid {
             Some(b) => {
-                if b.amount < bid.amount
-                    && bid.participant.reputation >= self.min_reputation.unwrap()
+                if bid.amount.is_higher(&b.amount)
+                    && self.min_reputation.unwrap() <= bid.participant.reputation
                 {
                     self.best_bid = Some(bid);
                 }

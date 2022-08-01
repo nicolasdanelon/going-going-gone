@@ -1,8 +1,11 @@
+#[allow(dead_code)]
 mod models;
 
+use crate::models::money_exchange::MoneyExchange;
 use chrono::prelude::{DateTime, Utc};
 use chrono::Duration;
-use models::auction::{Auctions, Bid, MoneyExchange, Status};
+use models::auction::{Auctions, Status};
+use models::bid::Bid;
 use models::participant::Participant;
 
 fn main() {
@@ -41,4 +44,6 @@ fn main() {
         println!("{:#?}", auction.state);
         println!("{:#?}", auction.bid);
     }
+
+    println!("Bids for this auction {:#?}", auction.bid.len());
 }

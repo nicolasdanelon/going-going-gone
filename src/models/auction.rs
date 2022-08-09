@@ -70,3 +70,30 @@ impl Auctions {
         self.state = Status::Fisnished;
     }
 }
+
+#[cfg(test)]
+mod test {
+    use chrono::Duration;
+
+    use crate::models::auction::Auctions;
+    use crate::models::participant::Participant;
+
+    use super::*;
+
+    #[test]
+    fn test_bid_is_finished() {
+        let money1 = MoneyExchange::BTC(1);
+        let now: DateTime<Utc> = Utc::now();
+        let end: DateTime<Utc> = now + Duration::days(6);
+        let mut auction: Auctions =
+            Auctions::new(Status::Online, money1, now, end, false, Some(80));
+        let participant1: Participant = Participant::new(60);
+        let bid1: Bid = Bid::new(money1, participant1);
+
+        auction.set_bid(bid1);
+
+        auction.set_fisinsh_status();
+
+        assert_eq!(auction.state, Status::Fisnished);
+    }
+}
